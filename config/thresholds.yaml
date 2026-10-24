@@ -1,0 +1,39 @@
+# Operational Thresholds, Budgets, and Safety Settings
+
+investigation:
+  min_hypothesis_confidence: 0.70
+  max_investigation_rounds: 3
+  max_tool_calls_per_incident: 25
+  max_tokens_per_incident: 100000
+  long_context_token_threshold: 24000
+  telemetry_lookback_minutes: 60
+  telemetry_lookahead_minutes: 15
+  change_lookback_minutes: 120
+  triage_sla_seconds: 120
+
+retry_policy:
+  max_retries: 2
+  base_delay_seconds: 0.5
+  max_delay_seconds: 5.0
+  jitter_seconds: 0.25
+  retryable_status_codes:
+    - 429
+    - 500
+    - 502
+    - 503
+    - 504
+
+safety:
+  read_only_default: true
+  require_human_approval_for_actions: true
+  redact_emails: true
+  redact_tokens: true
+  redact_ips: true
+  preserve_localhost_ip: true
+  strip_prompt_injections: true
+  allowed_data_sources:
+    - "logs"
+    - "metrics"
+    - "deploys"
+    - "runbooks"
+    - "topology"

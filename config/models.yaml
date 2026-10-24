@@ -1,0 +1,119 @@
+# Model Tier Configuration for Incident Response & Root Cause Post-Mortem Agent
+# All model IDs, context limits, token budgets, pricing, and fallback chains live here.
+
+roles:
+  supervisor:
+    description: "Fast, low-cost model for alert intake, routing decisions, and budget enforcement"
+    primary:
+      provider: "groq"
+      model_id: "llama-3.1-8b-instant"
+      context_window: 131072
+      max_output_tokens: 4096
+      temperature: 0.0
+      timeout_seconds: 10.0
+      max_retries: 2
+      input_cost_per_1m_usd: 0.05
+      output_cost_per_1m_usd: 0.08
+    secondary:
+      provider: "gemini"
+      model_id: "gemini-3.5-flash-lite"
+      context_window: 1048576
+      max_output_tokens: 4096
+      temperature: 0.0
+      timeout_seconds: 12.0
+      max_retries: 2
+      input_cost_per_1m_usd: 0.075
+      output_cost_per_1m_usd: 0.30
+
+  core:
+    description: "High-capability reasoning model for telemetry analysis, hypothesis ranking, and post-mortems"
+    primary:
+      provider: "groq"
+      model_id: "llama-3.3-70b-versatile"
+      context_window: 131072
+      max_output_tokens: 8192
+      temperature: 0.1
+      timeout_seconds: 15.0
+      max_retries: 2
+      input_cost_per_1m_usd: 0.59
+      output_cost_per_1m_usd: 0.79
+    secondary:
+      provider: "gemini"
+      model_id: "gemini-3.8-flash"
+      context_window: 1048576
+      max_output_tokens: 8192
+      temperature: 0.1
+      timeout_seconds: 20.0
+      max_retries: 2
+      input_cost_per_1m_usd: 0.15
+      output_cost_per_1m_usd: 0.60
+
+  long_context:
+    description: "1M-token context model used only when log/telemetry bundles exceed the Groq token threshold"
+    primary:
+      provider: "gemini"
+      model_id: "gemini-3.8-flash"
+      context_window: 1048576
+      max_output_tokens: 16384
+      temperature: 0.1
+      timeout_seconds: 25.0
+      max_retries: 2
+      input_cost_per_1m_usd: 0.15
+      output_cost_per_1m_usd: 0.60
+    secondary:
+      provider: "gemini"
+      model_id: "gemini-2.5-flash"
+      context_window: 1048576
+      max_output_tokens: 16384
+      temperature: 0.1
+      timeout_seconds: 25.0
+      max_retries: 2
+      input_cost_per_1m_usd: 0.15
+      output_cost_per_1m_usd: 0.60
+
+subagent_budgets:
+  triage_intake:
+    role: "supervisor"
+    timeout_seconds: 10.0
+    max_tokens: 4000
+  log_analyst:
+    role: "core"
+    timeout_seconds: 15.0
+    max_tokens: 16000
+    long_context_max_tokens: 64000
+  metrics_analyst:
+    role: "core"
+    timeout_seconds: 15.0
+    max_tokens: 10000
+  change_correlator:
+    role: "core"
+    timeout_seconds: 12.0
+    max_tokens: 8000
+  topology_mapper:
+    role: "core"
+    timeout_seconds: 10.0
+    max_tokens: 6000
+  runbook_retriever:
+    role: "core"
+    timeout_seconds: 10.0
+    max_tokens: 8000
+  hypothesis_ranker:
+    role: "core"
+    timeout_seconds: 15.0
+    max_tokens: 14000
+  remediation_proposer:
+    role: "core"
+    timeout_seconds: 12.0
+    max_tokens: 10000
+  timeline_builder:
+    role: "core"
+    timeout_seconds: 12.0
+    max_tokens: 10000
+  postmortem_writer:
+    role: "core"
+    timeout_seconds: 20.0
+    max_tokens: 16000
+  diagram_generator:
+    role: "core"
+    timeout_seconds: 10.0
+    max_tokens: 6000
