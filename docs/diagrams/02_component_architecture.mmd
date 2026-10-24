@@ -1,0 +1,39 @@
+flowchart TB
+    subgraph API["src/incident_agent/main.py & integrations/"]
+        FAST["FastAPI Endpoints<br/>(/webhooks/pagerduty, /webhooks/alertmanager, /slack/*)"]
+        INT["SlackClient & PagerDutyClient<br/>(Retry + Exponential Backoff)"]
+    end
+
+    subgraph Safety["src/incident_agent/safety/"]
+        RED["RedactionFilter<br/>(Emails, Tokens, Keys, IPs)"]
+        INJ["InjectionFilter<br/>(Neutralize Prompt Injections)"]
+        BUD["BudgetEnforcer<br/>(Max 3 Rounds, 25 Calls, 100k Tokens)"]
+        ALLOW["DataSourceAllowlist<br/>(Read-Only Verification)"]
+        GATE["ActionGate<br/>(execute_approved_action)"]
+    end
+
+    subgraph Supervisor["src/incident_agent/supervisor/"]
+        SUP["IncidentSupervisor<br/>(LangGraph StateGraph)"]
+    end
+
+    subgraph Subagents["src/incident_agent/subagents/ (11 LangChain StructuredTools)"]
+        T1["triage_intake"]
+        T2["log_analyst / metrics_analyst / change_correlator / topology_mapper / runbook_retriever"]
+        T3["hypothesis_ranker & remediation_proposer"]
+        T4["timeline_builder / diagram_generator / postmortem_writer"]
+    end
+
+    subgraph Infra["adapters/ + models/ + persistence/ + tracing/"]
+        ADP["AdapterBundle<br/>(5 Mock/Protocol Adapters)"]
+        MOD["get_chat_model(role)<br/>(ResilientTieredChatModel)"]
+        STR["SQLiteIncidentStore<br/>(IncidentStore Protocol)"]
+        TRC["LLMTracer<br/>(Token & USD Cost Accounting)"]
+    end
+
+    FAST --> RED --> INJ --> SUP
+    SUP --> BUD --> T1 & T2 & T3 & T4
+    T2 --> ALLOW --> ADP
+    T1 & T2 & T3 & T4 --> MOD --> TRC --> STR
+    SUP --> STR
+    SUP --> INT
+    FAST --> GATE --> STR

@@ -1,0 +1,34 @@
+flowchart LR
+    subgraph Triggers["Alert & ChatOps Sources"]
+        PD["PagerDuty Webhooks<br/>(trigger / ack / resolve)"]
+        SL["Slack Workspace<br/>(/triage, @incident-agent, Approve/Reject)"]
+        AM["Prometheus Alertmanager<br/>(v4 Alert Webhooks)"]
+    end
+
+    subgraph AgentPod["Incident Response & Root Cause Post-Mortem Agent"]
+        CORE["FastAPI + LangGraph Triage Pod<br/>(Read-Only Sub-Agents + ActionGate + Redaction)"]
+    end
+
+    subgraph Observability["Read-Only Observability & Infra Backends"]
+        LOGS["Loki / Elasticsearch<br/>(LogAdapter)"]
+        METRICS["Prometheus TSDB<br/>(MetricsAdapter)"]
+        DEPLOYS["ArgoCD / GitHub / LaunchDarkly<br/>(ChangeAdapter)"]
+        TOPO["Service Catalog Graph<br/>(TopologyAdapter)"]
+        RUNBOOKS["Runbook & Post-Mortem Store<br/>(RunbookAdapter)"]
+    end
+
+    subgraph LLMProviders["Tiered LLM Providers"]
+        GROQ["Groq Cloud API<br/>(llama-3.1-8b-instant & llama-3.3-70b-versatile)"]
+        GEMINI["Google Gemini API<br/>(gemini-3.5-flash-lite & gemini-3.8-flash 1M ctx)"]
+    end
+
+    PD -->|"HTTPS Webhook"| CORE
+    SL <-->|"Slash Cmds / Block Kit / Approvals"| CORE
+    AM -->|"HTTPS Webhook"| CORE
+    CORE -->|"Read-Only Queries"| LOGS
+    CORE -->|"Read-Only Queries"| METRICS
+    CORE -->|"Read-Only Queries"| DEPLOYS
+    CORE -->|"Read-Only Queries"| TOPO
+    CORE -->|"Read-Only Queries"| RUNBOOKS
+    CORE -->|"Primary Inference"| GROQ
+    CORE -.->|"Fallback & >24k Long-Context"| GEMINI

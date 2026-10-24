@@ -1,0 +1,25 @@
+flowchart TB
+    subgraph LocalDev["Local Development & CI Setup"]
+        L_SIM["scripts/simulate_incident.py<br/>or pytest Suite"]
+        L_API["FastAPI App (Uvicorn)<br/>src/incident_agent/main.py"]
+        L_MOCK["Mock AdapterBundle<br/>(5 Built-In Scenarios)"]
+        L_DB[("SQLite WAL Store<br/>./data/incidents.db")]
+        L_ENV[".env / Environment Variables"]
+        L_SIM --> L_API
+        L_ENV --> L_API
+        L_API --> L_MOCK
+        L_API --> L_DB
+    end
+
+    subgraph ProdEnv["Production Reference Setup (Kubernetes / Cloud)"]
+        P_ING["Cloud Load Balancer / API Gateway<br/>(TLS + Webhook HMAC Verification)"]
+        P_POD["Incident Agent API & Worker Pods<br/>(Docker Container, Read-Only IAM Role)"]
+        P_Q["Async Task Queue<br/>(Redis / Cloud Tasks)"]
+        P_PG[("Managed PostgreSQL<br/>IncidentStore + Checkpoints")]
+        P_SEC["Cloud Secrets Manager<br/>(GROQ_API_KEY, GEMINI_API_KEY, Slack/PD Tokens)"]
+        P_OBS["Live Loki, Prometheus, ArgoCD,<br/>Backstage & Runbook Vector Store"]
+        P_ING --> P_POD --> P_Q --> P_POD
+        P_SEC --> P_POD
+        P_POD --> P_PG
+        P_POD -->|"Read-Only Credentials"| P_OBS
+    end

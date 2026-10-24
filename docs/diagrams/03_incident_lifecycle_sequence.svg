@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" width="1120" height="560">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+    </marker>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .header { font-family: "Segoe UI", Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #0F172A; }
+      .sub { font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; fill: #475569; }
+      .node-title { font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; font-weight: 700; fill: #1E293B; }
+      .node-sub { font-family: "Segoe UI", Arial, sans-serif; font-size: 11px; fill: #475569; }
+      .edge-label { font-family: "Segoe UI", Arial, sans-serif; font-size: 11px; font-weight: 600; fill: #334155; }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1120" height="560" rx="12"/>
+  <text class="header" x="40" y="38">3. Incident Lifecycle Sequence Diagram — Trigger to Blameless Post-Mortem</text>
+  <text class="sub" x="40" y="60">End-to-end message flow across PagerDuty, FastAPI, Supervisor, Sub-Agents, Slack, and ActionGate</text>
+  <line x1="360" y1="142" x2="405" y2="142" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="382" y="134" text-anchor="middle">Step 1-&gt;2</text>
+  <line x1="715" y1="142" x2="760" y2="142" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="737" y="134" text-anchor="middle">Step 2-&gt;3</text>
+  <line x1="915" y1="190" x2="205" y2="265" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="560" y="219" text-anchor="middle">Step 3-&gt;4</text>
+  <line x1="360" y1="312" x2="405" y2="312" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="382" y="304" text-anchor="middle">Step 4-&gt;5</text>
+  <line x1="715" y1="312" x2="760" y2="312" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="737" y="304" text-anchor="middle">Step 5-&gt;6</text>
+  <rect x="50" y="95" width="310" height="95" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+  <text class="node-title" x="205" y="136" text-anchor="middle">1. Alert Trigger &amp; Ack</text>
+  <text class="node-sub" x="205" y="156" text-anchor="middle">PagerDuty webhook -&gt; Slack thread ack</text>
+  <rect x="405" y="95" width="310" height="95" rx="8" fill="#F0F9FF" stroke="#0284C7" stroke-width="2"/>
+  <text class="node-title" x="560" y="136" text-anchor="middle">2. Intake &amp; Parallel Triage</text>
+  <text class="node-sub" x="560" y="156" text-anchor="middle">triage_intake + 5 parallel telemetry tools</text>
+  <rect x="760" y="95" width="310" height="95" rx="8" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+  <text class="node-title" x="915" y="136" text-anchor="middle">3. Hypothesis Ranking Loop</text>
+  <text class="node-sub" x="915" y="156" text-anchor="middle">hypothesis_ranker (up to 3 rounds if conf &lt; 0.70)</text>
+  <rect x="50" y="265" width="310" height="95" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="2"/>
+  <text class="node-title" x="205" y="306" text-anchor="middle">4. Proposal &amp; Slack Summary</text>
+  <text class="node-sub" x="205" y="326" text-anchor="middle">remediation_proposer (PROPOSAL_ONLY) -&gt; Slack</text>
+  <rect x="405" y="265" width="310" height="95" rx="8" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <text class="node-title" x="560" y="306" text-anchor="middle">5. Human Approval Gate</text>
+  <text class="node-sub" x="560" y="326" text-anchor="middle">On-Call clicks Approve -&gt; ActionGate executes</text>
+  <rect x="760" y="265" width="310" height="95" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="2"/>
+  <text class="node-title" x="915" y="306" text-anchor="middle">6. Resolution &amp; Post-Mortem</text>
+  <text class="node-sub" x="915" y="326" text-anchor="middle">timeline_builder -&gt; diagram_generator -&gt; postmortem_writer</text>
+</svg>

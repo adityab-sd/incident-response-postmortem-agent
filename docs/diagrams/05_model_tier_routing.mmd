@@ -1,0 +1,27 @@
+flowchart LR
+    subgraph Subagents["11 Sub-Agent Tools"]
+        S_SUP["Supervisor Router &<br/>triage_intake"]
+        S_CORE["Core Sub-Agents (9):<br/>metrics, changes, topology,<br/>runbooks, ranker, proposer,<br/>timeline, postmortem, diagrams"]
+        S_LOG["log_analyst<br/>(Token-Count Router)"]
+    end
+
+    subgraph Tiers["Model Tiers (config/models.yaml)"]
+        T_SUP["Tier: supervisor<br/>Primary: Groq llama-3.1-8b-instant (131k)"]
+        T_CORE["Tier: core<br/>Primary: Groq llama-3.3-70b-versatile (131k)"]
+        T_LONG["Tier: long_context<br/>Primary: Gemini gemini-3.8-flash (1M)"]
+    end
+
+    subgraph Fallbacks["Secondary Failover Providers (on HTTP 429 / 5xx)"]
+        F_SUP["Fallback: Gemini<br/>gemini-3.5-flash-lite (1M)"]
+        F_CORE["Fallback: Gemini<br/>gemini-3.8-flash (1M)"]
+        F_LONG["Fallback: Gemini<br/>gemini-2.5-flash (1M)"]
+    end
+
+    S_SUP --> T_SUP
+    S_CORE --> T_CORE
+    S_LOG -->|"tokens <= 24,000"| T_CORE
+    S_LOG -->|"tokens > 24,000"| T_LONG
+
+    T_SUP -.->|"Retry x2 + Backoff -> Failover"| F_SUP
+    T_CORE -.->|"Retry x2 + Backoff -> Failover"| F_CORE
+    T_LONG -.->|"Retry x2 + Backoff -> Failover"| F_LONG

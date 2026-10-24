@@ -1,0 +1,33 @@
+sequenceDiagram
+    autonumber
+    participant PD as PagerDuty / Alertmanager
+    participant API as FastAPI Server
+    participant SUP as LangGraph Supervisor
+    participant SUB as Sub-Agent Tools (11)
+    participant SLK as Slack Incident Thread
+    participant ENG as On-Call Engineer
+
+    PD->>API: POST /webhooks/pagerduty (incident.triggered)
+    API->>SLK: Post immediate acknowledgment (<2s)
+    API->>SUP: start_incident_triage(incident_id)
+    SUP->>SUB: triage_intake(raw_payload)
+    par Parallel Telemetry Gathering (Round 1)
+        SUP->>SUB: topology_mapper(service)
+        SUP->>SUB: log_analyst(service, window)
+        SUP->>SUB: metrics_analyst(service, window)
+        SUP->>SUB: change_correlator(services, onset)
+        SUP->>SUB: runbook_retriever(service, symptoms)
+    end
+    SUP->>SUB: hypothesis_ranker(all_evidence)
+    opt confidence < 0.70 and round < 3
+        SUP->>SUB: Targeted Round 2/3 investigation on critical dependency
+        SUP->>SUB: hypothesis_ranker(updated_evidence)
+    end
+    SUP->>SUB: remediation_proposer(hypotheses) [PROPOSAL_ONLY]
+    SUP->>SLK: Post Triage Summary + Approve/Reject Action Buttons
+    ENG->>API: Click Approve Button (POST /slack/interactions)
+    API->>SUP: ActionGate.record_approval() & execute_approved_action()
+    PD->>API: POST /webhooks/pagerduty (incident.resolved)
+    API->>SUP: resolve_and_generate_postmortem(incident_id)
+    SUP->>SUB: timeline_builder() -> diagram_generator() -> postmortem_writer()
+    SUP->>SLK: Post Blameless Post-Mortem Draft & Mermaid Diagrams

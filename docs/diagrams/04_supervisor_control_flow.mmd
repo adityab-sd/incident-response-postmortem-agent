@@ -1,0 +1,11 @@
+flowchart TD
+    START(("START")) --> INTAKE["Node: intake<br/>Call triage_intake & save checkpoint"]
+    INTAKE --> ROUND_INC["Node: investigate<br/>Increment round_number & check BudgetEnforcer"]
+    ROUND_INC --> PAR["Parallel Sub-Agent Fan-Out:<br/>topology_mapper, log_analyst, metrics_analyst,<br/>change_correlator, runbook_retriever"]
+    PAR --> RANK["Node: rank_hypotheses<br/>Call hypothesis_ranker & validate evidence_ids"]
+    RANK --> CHECK{"top_confidence >= 0.70<br/>OR round_number >= 3<br/>OR budget_halted?"}
+    CHECK -- "No (Confidence < 0.70 & round < 3)" --> TARGET["Select critical downstream dependency<br/>for targeted follow-up round"]
+    TARGET --> ROUND_INC
+    CHECK -- "Yes (Sufficient confidence or cap hit)" --> PROP["Node: propose_remediation<br/>Call remediation_proposer (PROPOSAL_ONLY)"]
+    PROP --> POST["Format TriageSummaryReport & Post to Slack<br/>Save 'triaged' checkpoint"]
+    POST --> END_NODE(("END"))

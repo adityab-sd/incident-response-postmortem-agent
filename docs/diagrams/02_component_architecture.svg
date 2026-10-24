@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 600" width="1120" height="600">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+    </marker>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .header { font-family: "Segoe UI", Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #0F172A; }
+      .sub { font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; fill: #475569; }
+      .node-title { font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; font-weight: 700; fill: #1E293B; }
+      .node-sub { font-family: "Segoe UI", Arial, sans-serif; font-size: 11px; fill: #475569; }
+      .edge-label { font-family: "Segoe UI", Arial, sans-serif; font-size: 11px; font-weight: 600; fill: #334155; }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1120" height="600" rx="12"/>
+  <text class="header" x="40" y="38">2. Component Architecture Diagram — Internal Modules &amp; Data Flow</text>
+  <text class="sub" x="40" y="60">FastAPI routers, safety controls, LangGraph supervisor, 11 typed sub-agent tools, adapters, and SQLite store</text>
+  <line x1="360" y1="132" x2="410" y2="132" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="385" y="124" text-anchor="middle">Sanitize</text>
+  <line x1="730" y1="132" x2="780" y2="132" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="755" y="124" text-anchor="middle">Budget Check</text>
+  <line x1="850" y1="180" x2="300" y2="250" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="575" y="207" text-anchor="middle">Fan-Out</text>
+  <line x1="920" y1="180" x2="820" y2="250" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="870" y="207" text-anchor="middle">Synthesize</text>
+  <line x1="250" y1="360" x2="215" y2="430" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="232" y="387" text-anchor="middle">Allowlist Read</text>
+  <line x1="560" y1="360" x2="565" y2="430" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="562" y="387" text-anchor="middle">LLM Invoke</text>
+  <line x1="860" y1="360" x2="910" y2="430" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="edge-label" x="885" y="387" text-anchor="middle">Save State</text>
+  <rect x="60" y="85" width="300" height="95" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+  <text class="node-title" x="210" y="126" text-anchor="middle">FastAPI &amp; Integrations Layer</text>
+  <text class="node-sub" x="210" y="146" text-anchor="middle">main.py, SlackClient, PagerDutyClient</text>
+  <rect x="410" y="85" width="320" height="95" rx="8" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <text class="node-title" x="570" y="126" text-anchor="middle">Defense-in-Depth Safety Layer</text>
+  <text class="node-sub" x="570" y="146" text-anchor="middle">RedactionFilter, InjectionFilter, BudgetEnforcer, ActionGate</text>
+  <rect x="780" y="85" width="280" height="95" rx="8" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+  <text class="node-title" x="920" y="126" text-anchor="middle">LangGraph IncidentSupervisor</text>
+  <text class="node-sub" x="920" y="146" text-anchor="middle">supervisor/graph.py (StateGraph + Checkpointer)</text>
+  <rect x="60" y="250" width="480" height="110" rx="8" fill="#F0F9FF" stroke="#0284C7" stroke-width="2"/>
+  <text class="node-title" x="300" y="299" text-anchor="middle">Intake &amp; Parallel Discovery Tools</text>
+  <text class="node-sub" x="300" y="319" text-anchor="middle">triage_intake, log_analyst, metrics_analyst, change_correlator, topology_mapper, runbook_retriever</text>
+  <rect x="580" y="250" width="480" height="110" rx="8" fill="#F0F9FF" stroke="#0284C7" stroke-width="2"/>
+  <text class="node-title" x="820" y="299" text-anchor="middle">Reasoning &amp; Post-Mortem Tools</text>
+  <text class="node-sub" x="820" y="319" text-anchor="middle">hypothesis_ranker, remediation_proposer, timeline_builder, diagram_generator, postmortem_writer</text>
+  <rect x="60" y="430" width="310" height="100" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="2"/>
+  <text class="node-title" x="215" y="474" text-anchor="middle">Read-Only Adapters</text>
+  <text class="node-sub" x="215" y="494" text-anchor="middle">logs, metrics, deploys, topology, runbooks</text>
+  <rect x="410" y="430" width="310" height="100" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="2"/>
+  <text class="node-title" x="565" y="474" text-anchor="middle">Model Factory &amp; LLMTracer</text>
+  <text class="node-sub" x="565" y="494" text-anchor="middle">get_chat_model(role) + Groq/Gemini Fallback</text>
+  <rect x="760" y="430" width="300" height="100" rx="8" fill="#F3F4F6" stroke="#374151" stroke-width="2"/>
+  <text class="node-title" x="910" y="474" text-anchor="middle">Persistence (IncidentStore)</text>
+  <text class="node-sub" x="910" y="494" text-anchor="middle">SQLiteIncidentStore (Checkpoints, Evidence, Traces)</text>
+</svg>
