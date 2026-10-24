@@ -1,0 +1,102 @@
+[
+  {
+    "incident_id": "INC-EVAL-001",
+    "scenario": "bad_deploy",
+    "service": "checkout-service",
+    "severity": "SEV1",
+    "title": "High 5xx Error Rate on checkout-service (>18.5%)",
+    "symptom": "HTTP 5xx error rate spiked from 0.2% to 18.7% with NullPointerException in PaymentSerializer",
+    "true_root_cause_category": "bad_deploy",
+    "acceptable_action_types": ["rollback_deploy"]
+  },
+  {
+    "incident_id": "INC-EVAL-002",
+    "scenario": "bad_deploy",
+    "service": "checkout-service",
+    "severity": "SEV1",
+    "title": "Checkout Submit Endpoint 500 Spike Post-Release v2.14.0",
+    "symptom": "NullPointerException in PaymentSerializer.serialize after rollout of v2.14.0",
+    "true_root_cause_category": "bad_deploy",
+    "acceptable_action_types": ["rollback_deploy"]
+  },
+  {
+    "incident_id": "INC-EVAL-003",
+    "scenario": "dependency_timeout",
+    "service": "order-service",
+    "severity": "SEV1",
+    "title": "Downstream Timeout & p99 Latency Breach on order-service",
+    "symptom": "order-service p99 latency surged to 5200ms due to payment-gateway-client timeouts",
+    "true_root_cause_category": "dependency_timeout",
+    "acceptable_action_types": ["toggle_feature_flag", "restart_pods", "rate_limit_traffic"]
+  },
+  {
+    "incident_id": "INC-EVAL-004",
+    "scenario": "dependency_timeout",
+    "service": "order-service",
+    "severity": "SEV2",
+    "title": "Payment Gateway EU-West-2 PoP Circuit Breaker Open on order-service",
+    "symptom": "UpstreamTimeoutError calling payment-gateway-client:8443/authorize",
+    "true_root_cause_category": "dependency_timeout",
+    "acceptable_action_types": ["toggle_feature_flag", "restart_pods", "rate_limit_traffic"]
+  },
+  {
+    "incident_id": "INC-EVAL-005",
+    "scenario": "db_pool_exhaustion",
+    "service": "inventory-service",
+    "severity": "SEV2",
+    "title": "Database Connection Pool Exhaustion on inventory-service",
+    "symptom": "SQLAlchemy QueuePool limit of size 100 reached with 450 blocked threads",
+    "true_root_cause_category": "db_pool_exhaustion",
+    "acceptable_action_types": ["rollback_deploy", "increase_pool_size", "restart_pods"]
+  },
+  {
+    "incident_id": "INC-EVAL-006",
+    "scenario": "db_pool_exhaustion",
+    "service": "inventory-service",
+    "severity": "SEV1",
+    "title": "Inventory Reservation DB Connection Starvation",
+    "symptom": "db_pool_active_connections at 100% capacity with idle-in-transaction batch locks",
+    "true_root_cause_category": "db_pool_exhaustion",
+    "acceptable_action_types": ["rollback_deploy", "increase_pool_size", "restart_pods"]
+  },
+  {
+    "incident_id": "INC-EVAL-007",
+    "scenario": "config_flag_misfire",
+    "service": "recommendation-service",
+    "severity": "SEV2",
+    "title": "CPU Saturation & OOMKills on recommendation-service",
+    "symptom": "CPU hit 98.6% after enabling LaunchDarkly flag enable_heavy_ml_reranker",
+    "true_root_cause_category": "config_flag_misfire",
+    "acceptable_action_types": ["toggle_feature_flag"]
+  },
+  {
+    "incident_id": "INC-EVAL-008",
+    "scenario": "config_flag_misfire",
+    "service": "recommendation-service",
+    "severity": "SEV2",
+    "title": "Recommendation p99 Inference Latency Breach (3420ms)",
+    "symptom": "InferenceDeadlineExceeded in HeavyMLReranker after flag rollout",
+    "true_root_cause_category": "config_flag_misfire",
+    "acceptable_action_types": ["toggle_feature_flag"]
+  },
+  {
+    "incident_id": "INC-EVAL-009",
+    "scenario": "traffic_spike",
+    "service": "frontend-edge",
+    "severity": "SEV2",
+    "title": "4x Traffic Surge & HTTP 429/503 Saturation on frontend-edge",
+    "symptom": "Ingress RPS jumped from 2800 to 11800 RPS saturating 12-pod HPA ceiling",
+    "true_root_cause_category": "traffic_spike",
+    "acceptable_action_types": ["scale_replicas", "rate_limit_traffic"]
+  },
+  {
+    "incident_id": "INC-EVAL-010",
+    "scenario": "traffic_spike",
+    "service": "frontend-edge",
+    "severity": "SEV1",
+    "title": "Flash Sale Ingress Queue Saturation on frontend-edge",
+    "symptom": "Worker accept queue full (4096/4096) with zero recent deployments",
+    "true_root_cause_category": "traffic_spike",
+    "acceptable_action_types": ["scale_replicas", "rate_limit_traffic"]
+  }
+]
